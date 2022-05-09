@@ -1,7 +1,16 @@
+import 'dart:io';
+
+import 'package:chat_app_project/database/models/loading_model.dart';
+import 'package:chat_app_project/database/services/auth_service.dart';
+import 'package:chat_app_project/database/services/storage_services.dart';
 import 'package:chat_app_project/database/services/user_service.dart';
 import 'package:chat_app_project/views/pages/home/user_page/edit_user_screen.dart';
 import 'package:chat_app_project/views/widgets/text.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:tab_indicator_styler/tab_indicator_styler.dart';
 
 import '../../../widgets/colors.dart';
@@ -16,11 +25,30 @@ class UserInfoScreen extends StatefulWidget {
 class _UserInfoScreenState extends State<UserInfoScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
+  // File? imageFile;
 
   @override
   void initState() {
     super.initState();
+    // print('Current UserID:${FirebaseAuth.instance.currentUser?.uid}');
     _tabController = TabController(length: 2, vsync: this);
+  }
+
+  Future<File?> getImage() async {
+    var _picker = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (_picker != null) {
+      File? imageFile = File(_picker.path);
+      return imageFile;
+    }
+    return null;
+  }
+
+  Stream<QuerySnapshot> getUserImage() async* {
+    final currentUserID = await FirebaseAuth.instance.currentUser?.uid;
+    yield* FirebaseFirestore.instance
+        .collection('users')
+        .where('uID', isEqualTo: currentUserID)
+        .snapshots();
   }
 
   @override
@@ -46,17 +74,9 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width / 8,
-                    ),
-                    Center(
-                      child: CustomText(
-                        fontsize: 40,
-                        text: '${snapshot.data.get('fullName')}',
-                        fontFamily: 'DancingScript',
-                        color: MyColors.yellowColor,
-                      ),
-                    ),
+                    // SizedBox(
+                    //   width: MediaQuery.of(context).size.width / 8,
+                    // ),
                     IconButton(
                       onPressed: () {
                         Navigator.push(
@@ -71,6 +91,24 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                         color: Colors.blueAccent,
                       ),
                     ),
+                    Center(
+                      child: CustomText(
+                        fontsize: 40,
+                        text: '${snapshot.data.get('fullName')}',
+                        fontFamily: 'DancingScript',
+                        color: MyColors.yellowColor,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        AuthService.Logout(context: context);
+                      },
+                      iconSize: 25,
+                      icon: const Icon(
+                        Icons.logout,
+                        color: Colors.blueAccent,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 10),
@@ -82,19 +120,57 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                       Container(
                         height: 100,
                         width: 100,
-                        child: CircleAvatar(
-                          backgroundImage:
-                              NetworkImage('${snapshot.data.get('avartaURL')}'),
-                        ),
+                        child: StreamBuilder<QuerySnapshot>(
+                            stream: getUserImage(),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (snapshot.hasError) {
+                                return const Text('Something went wrong');
+                              }
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                              return Consumer<LoadingModel>(
+                                builder: (_, isLoadingImage, __) {
+                                  if (isLoadingImage.isLoading) {
+                                    return const CircleAvatar(
+                                      backgroundColor: Colors.white,
+                                      child: Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    );
+                                  } else {
+                                    return CircleAvatar(
+                                      backgroundColor: MyColors.mainColor,
+                                      backgroundImage: NetworkImage(snapshot
+                                          .data?.docs.first['avartaURL']),
+                                    );
+                                  }
+                                },
+                              );
+                            }),
                       ),
                       Positioned(
                         bottom: -16,
                         right: -15,
                         child: IconButton(
-                          onPressed: () {
-                            UserService.getUserInfo();
+                          onPressed: () async {
+                            context.read<LoadingModel>().changeLoading();
+                            File? fileImage = await getImage();
+                            if (fileImage == null) {
+                              context.read<LoadingModel>().changeLoading();
+                            } else {
+                              String fileName =
+                                  await StorageServices.uploadImage(fileImage);
+                              UserService.editUserImage(
+                                  context: context, ImageStorageLink: fileName);
+                              context.read<LoadingModel>().changeLoading();
+                            }
                           },
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.upload_sharp,
                             color: Colors.greenAccent,
                           ),
@@ -122,12 +198,12 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                   color: MyColors.yellowColor,
                 ),
                 const SizedBox(height: 20),
-                Container(
+                SizedBox(
                   height: 50,
                   child: TabBar(
                     controller: _tabController,
-                    indicatorColor: Colors.green,
-                    labelColor: Colors.red,
+                    // indicatorColor: Colors.green,
+                    // labelColor: Colors.red,
                     indicator: MaterialIndicator(
                       height: 3,
                       topLeftRadius: 0,

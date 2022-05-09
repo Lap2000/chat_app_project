@@ -1,4 +1,5 @@
 import 'package:chat_app_project/database/models/gender_model.dart';
+import 'package:chat_app_project/database/models/loading_model.dart';
 import 'package:chat_app_project/views/pages/auth/auth_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,9 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(
           create: (context) => GenderModel(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => LoadingModel(),
         ),
       ],
       child: const MyApp(),

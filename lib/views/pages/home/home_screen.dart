@@ -1,5 +1,6 @@
 import 'package:chat_app_project/views/pages/home/chat_page/chat_screen.dart';
 import 'package:chat_app_project/views/pages/home/user_page/user_screen.dart';
+import 'package:chat_app_project/views/pages/home/video_page/video_screen.dart';
 import 'package:chat_app_project/views/widgets/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,13 +24,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: IndexedStack(
           index: _tabIndex,
-          children: [Center(child: Text('Home')), ChatScreen(), UserInfoScreen()],
+          children: [VideoScreen(), ChatScreen(), UserInfoScreen()],
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.music_house_fill),

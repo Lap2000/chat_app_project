@@ -9,7 +9,7 @@ class UserService {
   static Future getUserInfo() async {
     final CollectionReference users =
         FirebaseFirestore.instance.collection('users');
-    final storage = new FlutterSecureStorage();
+    final storage = FlutterSecureStorage();
     String? UID = await storage.read(key: 'uID');
     final result = await users.doc(UID).get();
     // final UserModel user = UserModel(
@@ -49,30 +49,6 @@ class UserService {
     } catch (e) {}
   }
 
-  // static getUserInfo() async {
-  //   // Call the user's CollectionReference to add a new user
-  //   try {
-  //     final storage = new FlutterSecureStorage();
-  //     String? UID = await storage.read(key: 'uID');
-  //     var userInfo = await FirebaseFirestore.instance
-  //         .collection('users')
-  //         .where('uID', isEqualTo: UID)
-  //         .snapshots();
-  //     // var userInfo =
-  //     //     await FirebaseFirestore.instance.collection('users').doc(UID).get();
-  //     // QuerySnapshot querySnapshot = userInfo;
-  //     //var data = querySnapshot.docs.first.data;
-  //     // Map<String, dynamic> data =
-  //     //     querySnapshot.docs.first.data() as Map<String, dynamic>;
-  //     // print('$data + ${data.runtimeType}');
-  //     // print('${data['fullName']}');
-  //     //notifyListeners();
-  //     return userInfo;
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
-
   static editUserFetch(
       {required BuildContext context,
       required age,
@@ -82,7 +58,7 @@ class UserService {
     try {
       CollectionReference users =
           FirebaseFirestore.instance.collection('users');
-      final storage = new FlutterSecureStorage();
+      final storage = FlutterSecureStorage();
       String? UID = await storage.read(key: 'uID');
       users
           .doc(UID)
@@ -106,6 +82,40 @@ class UserService {
     } catch (e) {
       getSnackBar(
         'Edit Info',
+        'Edit Fail. $e',
+        Colors.red,
+      ).show(context);
+      print(e);
+    }
+  }
+
+  static editUserImage(
+      {required BuildContext context, required ImageStorageLink}) async {
+    try {
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('users');
+      final storage = FlutterSecureStorage();
+      String? UID = await storage.read(key: 'uID');
+      users
+          .doc(UID)
+          .update({
+            'avartaURL': ImageStorageLink,
+          })
+          .then((value) => print("User's Image Updated"))
+          .catchError((error) => print("Failed to update user: $error"));
+      return false;
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => HomeScreen()),
+      // );
+      getSnackBar(
+        'Edit Image',
+        'Edit Success.',
+        Colors.green,
+      ).show(context);
+    } catch (e) {
+      getSnackBar(
+        'Edit Image',
         'Edit Fail. $e',
         Colors.red,
       ).show(context);

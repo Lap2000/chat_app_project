@@ -1,4 +1,5 @@
 import 'package:chat_app_project/database/services/user_service.dart';
+import 'package:chat_app_project/views/pages/auth/auth_screen.dart';
 import 'package:chat_app_project/views/pages/auth/login_screen.dart';
 import 'package:chat_app_project/views/widgets/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,11 +18,10 @@ class AuthService {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      final storage = new FlutterSecureStorage();
+      final storage = FlutterSecureStorage();
       String? uID = userCredential.user?.uid.toString();
       await storage.write(key: 'uID', value: uID);
       String? value = await storage.read(key: 'uID');
-      print(value);
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => HomeScreen()),
@@ -48,6 +48,23 @@ class AuthService {
         //print('Wrong password provided for that user.');
       }
     }
+  }
+
+  static Logout({required BuildContext context}) async {
+    try {
+      FirebaseAuth.instance.signOut();
+      final storage = FlutterSecureStorage();
+      await storage.deleteAll();
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const AuthScreen()),
+      );
+      getSnackBar(
+        'Logout',
+        'Logout Success.',
+        Colors.green,
+      ).show(context);
+    } catch (e) {}
   }
 
   static registerFetch(

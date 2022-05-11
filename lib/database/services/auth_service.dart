@@ -22,6 +22,7 @@ class AuthService {
       String? uID = userCredential.user?.uid.toString();
       await storage.write(key: 'uID', value: uID);
       String? value = await storage.read(key: 'uID');
+      FocusScope.of(context).unfocus();
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => HomeScreen()),

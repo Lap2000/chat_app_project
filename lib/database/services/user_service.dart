@@ -6,6 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../views/widgets/snackbar.dart';
 
 class UserService {
+  //Get userInfo from firestore cloud
   static Future getUserInfo() async {
     final CollectionReference users =
         FirebaseFirestore.instance.collection('users');
@@ -23,6 +24,7 @@ class UserService {
     return result;
   }
 
+  //Add user to firestore cloud after registering
   static addUser({
     required String? UID,
     required String fullName,
@@ -49,6 +51,7 @@ class UserService {
     } catch (e) {}
   }
 
+  //Edit userInfo in firestore cloud
   static editUserFetch(
       {required BuildContext context,
       required age,
@@ -89,6 +92,7 @@ class UserService {
     }
   }
 
+  //Edit user's Image
   static editUserImage(
       {required BuildContext context, required ImageStorageLink}) async {
     try {
@@ -119,7 +123,6 @@ class UserService {
         'Edit Fail. $e',
         Colors.red,
       ).show(context);
-      print(e);
     }
   }
 }

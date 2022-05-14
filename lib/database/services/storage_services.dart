@@ -42,6 +42,21 @@ class StorageServices {
     return downloadUrl;
   }
 
+  static getThumbnail(String videoPath) async {
+    final thumbnail = await VideoCompress.getFileThumbnail(videoPath);
+    return thumbnail;
+  }
+
+  static Future<String> uploadImageToStorage(
+      String id, String videoPath) async {
+    Reference ref =
+        FirebaseStorage.instance.ref().child('thumbnails').child(id);
+    UploadTask uploadTask = ref.putFile(await getThumbnail(videoPath));
+    TaskSnapshot snap = await uploadTask;
+    String downloadUrl = await snap.ref.getDownloadURL();
+    return downloadUrl;
+  }
+
   // upload video to firestore cloud
   static uploadVideo(BuildContext context, String songName, String caption,
       String videoPath) async {
@@ -53,6 +68,7 @@ class StorageServices {
       var allDocs = await FirebaseFirestore.instance.collection('videos').get();
       int len = allDocs.docs.length;
       String videoUrl = await uploadVideoToStorage("Video $len", videoPath);
+      String thumbnail = await uploadImageToStorage("Video $len", videoPath);
 
       Video video = Video(
         username: (userDoc.data()! as Map<String, dynamic>)['fullName'],
@@ -64,6 +80,7 @@ class StorageServices {
         songName: songName,
         caption: caption,
         videoUrl: videoUrl,
+        thumbnail: thumbnail,
         profilePhoto: (userDoc.data()! as Map<String, dynamic>)['avartaURL'],
       );
 

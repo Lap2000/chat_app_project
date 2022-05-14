@@ -24,6 +24,21 @@ class UserService {
     return result;
   }
 
+  static Future getPeopleInfo(String peopleID) async {
+    final CollectionReference users =
+        FirebaseFirestore.instance.collection('users');
+    final result = await users.doc(peopleID).get();
+    // final UserModel user = UserModel(
+    //     gender: result.get('gender'),
+    //     email: result.get('email'),
+    //     phone: result.get('phone'),
+    //     age: result.get('age'),
+    //     avartaURL: result.get('avartaURL'),
+    //     fullName: result.get('fullName'));
+    //print(result.get('fullName'));
+    return result;
+  }
+
   //Add user to firestore cloud after registering
   static addUser({
     required String? UID,

@@ -1,31 +1,29 @@
 import 'package:chat_app_project/database/models/video_model.dart';
 import 'package:chat_app_project/views/widgets/circle_animation.dart';
-import 'package:chat_app_project/views/widgets/video_player_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../database/services/video_service.dart';
 import '../../../widgets/colors.dart';
+import '../user_page/people_detail_screen.dart';
 
-class VideoScreen extends StatefulWidget {
-  const VideoScreen({Key? key}) : super(key: key);
+class VideoScreen extends StatelessWidget {
+  VideoScreen({Key? key}) : super(key: key);
 
-  @override
-  State<VideoScreen> createState() => _VideoScreenState();
-}
-
-class _VideoScreenState extends State<VideoScreen> {
   String? uid = FirebaseAuth.instance.currentUser?.uid;
   //final TextEditingController _textEditingController = TextEditingController();
   CollectionReference videos = FirebaseFirestore.instance.collection('videos');
   final CollectionReference users =
       FirebaseFirestore.instance.collection('users');
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   // String avatarURL = '';
   // String userName = '';
 
-  buildProfile(String profilePhoto) {
+  buildProfile(BuildContext context, String profilePhoto, String id) {
     return SizedBox(
       width: 60,
       height: 60,
@@ -42,9 +40,18 @@ class _VideoScreenState extends State<VideoScreen> {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(25),
-              child: Image(
-                image: NetworkImage(profilePhoto),
-                fit: BoxFit.cover,
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PeopleInfoScreen(peopleID: id)),
+                  );
+                },
+                child: Image(
+                  image: NetworkImage(profilePhoto),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
@@ -105,10 +112,406 @@ class _VideoScreenState extends State<VideoScreen> {
     }).then((value) async {});
   }
 
-  void showBottomSheet(BuildContext context, String videoID) {
+  _showBottomSheet(BuildContext context, String videoID) {
     final TextEditingController _textEditingController =
         TextEditingController();
-    showModalBottomSheet(
+    // final page = SizedBox.expand(
+    //   child: DraggableScrollableSheet(
+    //     expand: true,
+    //     initialChildSize: 1,
+    //     builder: (context, scrollController) {
+    //       return Container(
+    //         child: Column(
+    //           mainAxisAlignment: MainAxisAlignment.center,
+    //           crossAxisAlignment: CrossAxisAlignment.center,
+    //           children: [
+    //             const SizedBox(
+    //               height: 10,
+    //             ),
+    //             Row(
+    //               mainAxisAlignment: MainAxisAlignment.center,
+    //               children: [
+    //                 StreamBuilder<QuerySnapshot>(
+    //                   stream: videos
+    //                       .doc(videoID)
+    //                       .collection('commentList')
+    //                       .snapshots(),
+    //                   builder: (BuildContext context,
+    //                       AsyncSnapshot<QuerySnapshot> snapshot) {
+    //                     if (snapshot.hasError) {
+    //                       return const Text('Something went wrong');
+    //                     }
+    //                     if (snapshot.connectionState ==
+    //                         ConnectionState.waiting) {
+    //                       return Center(
+    //                         child: Container(),
+    //                       );
+    //                     }
+    //                     //Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+    //                     if (snapshot.hasData) {
+    //                       return Text(
+    //                         '${snapshot.data!.docs.length} Comments',
+    //                         style: const TextStyle(fontSize: 18),
+    //                       );
+    //                     }
+    //                     return Container();
+    //                   },
+    //                 ),
+    //               ],
+    //             ),
+    //             Flexible(
+    //               child: StreamBuilder<QuerySnapshot>(
+    //                 stream: videos
+    //                     .doc(videoID)
+    //                     .collection('commentList')
+    //                     .snapshots(),
+    //                 builder: (BuildContext context,
+    //                     AsyncSnapshot<QuerySnapshot> snapshot) {
+    //                   if (snapshot.hasError) {
+    //                     return const Text('Something went wrong');
+    //                   }
+    //                   if (snapshot.connectionState == ConnectionState.waiting) {
+    //                     return Center(
+    //                       child: Container(),
+    //                     );
+    //                   }
+    //                   //Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+    //                   if (snapshot.hasData) {
+    //                     return Column(
+    //                       children: [
+    //                         Expanded(
+    //                           child: ListView.builder(
+    //                             controller: scrollController,
+    //                             itemCount: snapshot.data!.docs.length,
+    //                             itemBuilder: (BuildContext context, int index) {
+    //                               final item = snapshot.data!.docs[index];
+    //                               return Column(
+    //                                 children: [
+    //                                   const SizedBox(
+    //                                     height: 10,
+    //                                   ),
+    //                                   Padding(
+    //                                     padding:
+    //                                         const EdgeInsets.only(left: 8.0),
+    //                                     child: Row(
+    //                                       mainAxisAlignment:
+    //                                           MainAxisAlignment.start,
+    //                                       crossAxisAlignment:
+    //                                           CrossAxisAlignment.start,
+    //                                       children: [
+    //                                         CircleAvatar(
+    //                                           backgroundImage: NetworkImage(
+    //                                               '${item['avatarURL']}'),
+    //                                         ),
+    //                                         const SizedBox(
+    //                                           width: 10,
+    //                                         ),
+    //                                         Column(
+    //                                           crossAxisAlignment:
+    //                                               CrossAxisAlignment.start,
+    //                                           children: [
+    //                                             Text(
+    //                                               '${item['userName']}',
+    //                                               style: const TextStyle(
+    //                                                   fontSize: 14,
+    //                                                   color: Colors.black38),
+    //                                             ),
+    //                                             Container(
+    //                                               width: MediaQuery.of(context)
+    //                                                       .size
+    //                                                       .width *
+    //                                                   3 /
+    //                                                   4,
+    //                                               child: Text(
+    //                                                 '${item['content']}',
+    //                                                 style: const TextStyle(
+    //                                                     fontSize: 16,
+    //                                                     color: Colors.black,
+    //                                                     fontFamily: 'Popins'),
+    //                                               ),
+    //                                             ),
+    //                                             Text(
+    //                                               item['createdOn'] == null
+    //                                                   ? DateTime.now()
+    //                                                       .toString()
+    //                                                   : DateFormat.yMMMd()
+    //                                                       .add_jm()
+    //                                                       .format(
+    //                                                           item['createdOn']
+    //                                                               .toDate()),
+    //                                               style: const TextStyle(
+    //                                                   fontSize: 12,
+    //                                                   color: Colors.black38),
+    //                                             ),
+    //                                           ],
+    //                                         ),
+    //                                         const Spacer(),
+    //                                         Padding(
+    //                                           padding: const EdgeInsets.only(
+    //                                               right: 8.0),
+    //                                           child: Column(
+    //                                             children: [
+    //                                               InkWell(
+    //                                                 onTap: () {
+    //                                                   VideoServices.likeComment(
+    //                                                       videoID, item['id']);
+    //                                                 },
+    //                                                 child: Icon(
+    //                                                   Icons.favorite,
+    //                                                   color: snapshot
+    //                                                           .data!
+    //                                                           .docs[index]
+    //                                                               ['likes']
+    //                                                           .contains(uid)
+    //                                                       ? Colors.red
+    //                                                       : Colors.grey,
+    //                                                 ),
+    //                                               ),
+    //                                               Text(
+    //                                                   '${item['likes'].length}'),
+    //                                             ],
+    //                                           ),
+    //                                         ),
+    //                                       ],
+    //                                     ),
+    //                                   ),
+    //                                 ],
+    //                               );
+    //                             },
+    //                           ),
+    //                         ),
+    //                       ],
+    //                     );
+    //                   }
+    //                   return Container();
+    //                 },
+    //               ),
+    //             ),
+    //             Padding(
+    //               padding: const EdgeInsets.all(8.0),
+    //               child: Container(
+    //                 height: 40,
+    //                 child: TextField(
+    //                   controller: _textEditingController,
+    //                   textAlignVertical: TextAlignVertical.bottom,
+    //                   decoration: InputDecoration(
+    //                     border: OutlineInputBorder(
+    //                       borderSide: BorderSide(
+    //                         width: 2,
+    //                         color: MyColors.mainColor,
+    //                       ),
+    //                       borderRadius: BorderRadius.circular(10.0),
+    //                     ),
+    //                     hintText: "Comment here ...",
+    //                     suffixIcon: IconButton(
+    //                       onPressed: () {
+    //                         sendComment(_textEditingController.text, videoID);
+    //                         _textEditingController.text = '';
+    //                       },
+    //                       icon: Icon(
+    //                         Icons.send_rounded,
+    //                         color: MyColors.mainColor,
+    //                       ),
+    //                     ),
+    //                   ),
+    //                 ),
+    //               ),
+    //             ),
+    //           ],
+    //         ),
+    //       );
+    //     },
+    //   ),
+    // );
+    final page2 = Container(
+      height: MediaQuery.of(context).size.height * 3 / 4,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              StreamBuilder<QuerySnapshot>(
+                stream:
+                    videos.doc(videoID).collection('commentList').snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: Container(),
+                    );
+                  }
+                  //Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+                  if (snapshot.hasData) {
+                    return Text(
+                      '${snapshot.data!.docs.length} Comments',
+                      style: const TextStyle(fontSize: 18),
+                    );
+                  }
+                  return Container();
+                },
+              ),
+            ],
+          ),
+          Flexible(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: videos.doc(videoID).collection('commentList').snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return const Text('Something went wrong');
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: Container(),
+                  );
+                }
+                //Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+                if (snapshot.hasData) {
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final item = snapshot.data!.docs[index];
+                            return Column(
+                              children: [
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                            '${item['avatarURL']}'),
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            '${item['userName']}',
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.black38),
+                                          ),
+                                          Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                3 /
+                                                4,
+                                            child: Text(
+                                              '${item['content']}',
+                                              style: const TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.black,
+                                                  fontFamily: 'Popins'),
+                                            ),
+                                          ),
+                                          Text(
+                                            item['createdOn'] == null
+                                                ? DateTime.now().toString()
+                                                : DateFormat.yMMMd()
+                                                    .add_jm()
+                                                    .format(item['createdOn']
+                                                        .toDate()),
+                                            style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.black38),
+                                          ),
+                                        ],
+                                      ),
+                                      const Spacer(),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 8.0),
+                                        child: Column(
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                VideoServices.likeComment(
+                                                    videoID, item['id']);
+                                              },
+                                              child: Icon(
+                                                Icons.favorite,
+                                                color: snapshot.data!
+                                                        .docs[index]['likes']
+                                                        .contains(uid)
+                                                    ? Colors.red
+                                                    : Colors.grey,
+                                              ),
+                                            ),
+                                            Text('${item['likes'].length}'),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                }
+                return Container();
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              height: 40,
+              child: TextField(
+                controller: _textEditingController,
+                textAlignVertical: TextAlignVertical.bottom,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      width: 2,
+                      color: MyColors.mainColor,
+                    ),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  hintText: "Comment here ...",
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      sendComment(_textEditingController.text, videoID);
+                      _textEditingController.text = '';
+                    },
+                    icon: Icon(
+                      Icons.send_rounded,
+                      color: MyColors.mainColor,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    //_scaffoldKey.currentState.showBottomSheet((context) => null);
+    showModalBottomSheet<void>(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(7),
@@ -118,196 +521,7 @@ class _VideoScreenState extends State<VideoScreen> {
       backgroundColor: Colors.white,
       context: context,
       builder: (context) {
-        return SizedBox.expand(
-          child: DraggableScrollableSheet(
-            expand: true,
-            initialChildSize: 1,
-            builder: (context, scrollController) {
-              return Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text(
-                          '26 Comments',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
-                    Flexible(
-                      child: StreamBuilder<QuerySnapshot>(
-                        stream: videos
-                            .doc(videoID)
-                            .collection('commentList')
-                            .snapshots(),
-                        builder: (BuildContext context,
-                            AsyncSnapshot<QuerySnapshot> snapshot) {
-                          if (snapshot.hasError) {
-                            return const Text('Something went wrong');
-                          }
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          //Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
-                          if (snapshot.hasData) {
-                            return Column(
-                              children: [
-                                Expanded(
-                                  child: ListView.builder(
-                                    controller: scrollController,
-                                    itemCount: snapshot.data!.docs.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      final item = snapshot.data!.docs[index];
-                                      return Column(
-                                        children: [
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 8.0),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                CircleAvatar(
-                                                  backgroundImage: NetworkImage(
-                                                      '${item['avatarURL']}'),
-                                                ),
-                                                const SizedBox(
-                                                  width: 10,
-                                                ),
-                                                Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      '${item['userName']}',
-                                                      style: TextStyle(
-                                                          fontSize: 14,
-                                                          color:
-                                                              Colors.black38),
-                                                    ),
-                                                    Container(
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width *
-                                                              3 /
-                                                              4,
-                                                      child: Text(
-                                                        '${item['content']}',
-                                                        style: TextStyle(
-                                                            fontSize: 16,
-                                                            color: Colors.black,
-                                                            fontFamily:
-                                                                'Popins'),
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      '1h',
-                                                      style: TextStyle(
-                                                          fontSize: 14,
-                                                          color:
-                                                              Colors.black38),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const Spacer(),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          right: 8.0),
-                                                  child: Column(
-                                                    children: [
-                                                      InkWell(
-                                                        onTap: () {
-                                                          VideoServices
-                                                              .likeComment(
-                                                                  videoID,
-                                                                  item['id']);
-                                                        },
-                                                        child: Icon(
-                                                          Icons.favorite,
-                                                          color: snapshot
-                                                                  .data!
-                                                                  .docs[index]
-                                                                      ['likes']
-                                                                  .contains(uid)
-                                                              ? Colors.red
-                                                              : Colors.grey,
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                          '${item['likes'].length}'),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
-                            );
-                          }
-                          return Container();
-                        },
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        height: 40,
-                        child: TextField(
-                          controller: _textEditingController,
-                          textAlignVertical: TextAlignVertical.bottom,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                width: 2,
-                                color: MyColors.mainColor,
-                              ),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            hintText: "Comment here ...",
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                print(_textEditingController.text);
-                                sendComment(
-                                    _textEditingController.text, videoID);
-                                _textEditingController.text = '';
-                              },
-                              icon: Icon(
-                                Icons.send_rounded,
-                                color: MyColors.mainColor,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        );
+        return page2;
       },
     );
   }
@@ -319,7 +533,10 @@ class _VideoScreenState extends State<VideoScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('videos').snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('videos')
+            .where('uid', isNotEqualTo: uid)
+            .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
             return const Text('Something went wrong');
@@ -330,6 +547,7 @@ class _VideoScreenState extends State<VideoScreen> {
             );
           }
           return PageView.builder(
+            dragStartBehavior: DragStartBehavior.down,
             itemCount: snapshot.data!.docs.length,
             scrollDirection: Axis.vertical,
             controller: PageController(initialPage: 0, viewportFraction: 1),
@@ -337,9 +555,9 @@ class _VideoScreenState extends State<VideoScreen> {
               final Video item = Video.fromSnap(snapshot.data!.docs[index]);
               return Stack(
                 children: [
-                  VideoPlayerItem(
-                    videoUrl: item.videoUrl,
-                  ),
+                  // VideoPlayerItem(
+                  //   videoUrl: item.videoUrl,
+                  // ),
                   Column(
                     children: [
                       const SizedBox(
@@ -401,7 +619,8 @@ class _VideoScreenState extends State<VideoScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  buildProfile(item.profilePhoto),
+                                  buildProfile(
+                                      context, item.profilePhoto, item.uid),
                                   Column(
                                     children: [
                                       InkWell(
@@ -432,7 +651,7 @@ class _VideoScreenState extends State<VideoScreen> {
                                     children: [
                                       InkWell(
                                         onTap: () {
-                                          showBottomSheet(context, item.id);
+                                          _showBottomSheet(context, item.id);
                                         },
                                         child: const Icon(
                                           CupertinoIcons.chat_bubble_text_fill,
@@ -443,10 +662,28 @@ class _VideoScreenState extends State<VideoScreen> {
                                       const SizedBox(
                                         height: 7,
                                       ),
-                                      Text(
-                                        '26',
-                                        style: TextStyle(
-                                            fontSize: 16, color: Colors.white),
+                                      StreamBuilder<QuerySnapshot>(
+                                        stream: videos
+                                            .doc(item.id)
+                                            .collection('commentList')
+                                            .snapshots(),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<QuerySnapshot>
+                                                snapshot) {
+                                          if (snapshot.hasError) {
+                                            return const Text(
+                                                'Something went wrong');
+                                          }
+                                          if (snapshot.hasData) {
+                                            return Text(
+                                              '${snapshot.data!.docs.length}',
+                                              style: const TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.white),
+                                            );
+                                          }
+                                          return Container();
+                                        },
                                       ),
                                     ],
                                   ),

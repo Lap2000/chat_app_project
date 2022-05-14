@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:chat_app_project/database/services/chat_services.dart';
+import 'package:chat_app_project/views/pages/home/user_page/people_detail_screen.dart';
 import 'package:chat_bubbles/bubbles/bubble_special_three.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -116,8 +117,18 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             Container(
               height: 50,
               width: 50,
-              child: CircleAvatar(
-                backgroundImage: NetworkImage(peopleImage),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            PeopleInfoScreen(peopleID: peopleID)),
+                  );
+                },
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(peopleImage),
+                ),
               ),
             ),
             const SizedBox(
@@ -216,6 +227,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                             ? Container(
                                                 width: 200,
                                                 height: 200,
+                                                padding: EdgeInsets.only(
+                                                    left: 10, right: 10),
                                                 alignment: isSender(
                                                         data['uID'].toString())
                                                     ? Alignment.centerRight

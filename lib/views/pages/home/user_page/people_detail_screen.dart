@@ -1,10 +1,7 @@
 import 'dart:io';
 
 import 'package:chat_app_project/database/models/loading_model.dart';
-import 'package:chat_app_project/database/services/auth_service.dart';
-import 'package:chat_app_project/database/services/storage_services.dart';
 import 'package:chat_app_project/database/services/user_service.dart';
-import 'package:chat_app_project/views/pages/home/user_page/edit_user_screen.dart';
 import 'package:chat_app_project/views/widgets/text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,18 +11,20 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:tab_indicator_styler/tab_indicator_styler.dart';
 
+import '../../../../database/services/chat_services.dart';
 import '../../../widgets/colors.dart';
 import '../video_page/video_profile_player_screen.dart';
 import 'add_video_screen.dart';
 
-class UserInfoScreen extends StatefulWidget {
-  const UserInfoScreen({Key? key}) : super(key: key);
+class PeopleInfoScreen extends StatefulWidget {
+  final String peopleID;
+  const PeopleInfoScreen({Key? key, required this.peopleID}) : super(key: key);
 
   @override
-  State<UserInfoScreen> createState() => _UserInfoScreenState();
+  State<PeopleInfoScreen> createState() => _PeopleInfoScreenState();
 }
 
-class _UserInfoScreenState extends State<UserInfoScreen>
+class _PeopleInfoScreenState extends State<PeopleInfoScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
   String? uid = FirebaseAuth.instance.currentUser?.uid;
@@ -34,7 +33,6 @@ class _UserInfoScreenState extends State<UserInfoScreen>
   @override
   void initState() {
     super.initState();
-    // print('Current UserID:${FirebaseAuth.instance.currentUser?.uid}');
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -55,6 +53,13 @@ class _UserInfoScreenState extends State<UserInfoScreen>
         .snapshots();
   }
 
+  Stream<QuerySnapshot> getPeopleImage(String id) async* {
+    yield* FirebaseFirestore.instance
+        .collection('users')
+        .where('uID', isEqualTo: id)
+        .snapshots();
+  }
+
   pickVideo(ImageSource src, BuildContext context) async {
     final video = await ImagePicker().pickVideo(source: src);
     if (video != null) {
@@ -69,159 +74,11 @@ class _UserInfoScreenState extends State<UserInfoScreen>
     }
   }
 
-  showLogoutDialog(BuildContext context) {
-    return showDialog(
-      context: context,
-      builder: (context) => SimpleDialog(
-        children: [
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'SIGN OUT',
-                  style: TextStyle(fontSize: 25, color: Colors.red),
-                ),
-                const Text(
-                  'Are you sure ?',
-                  style: TextStyle(fontSize: 20),
-                ),
-              ],
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SimpleDialogOption(
-                onPressed: () {
-                  AuthService.Logout(context: context);
-                },
-                child: Row(
-                  children: const [
-                    Icon(
-                      Icons.done,
-                      color: Colors.green,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(7.0),
-                      child: Text(
-                        'Yes',
-                        style: TextStyle(fontSize: 20, color: Colors.green),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SimpleDialogOption(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Row(
-                  children: const [
-                    Icon(
-                      Icons.cancel,
-                      color: Colors.red,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(7.0),
-                      child: Text(
-                        'No',
-                        style: TextStyle(fontSize: 20, color: Colors.red),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  showOptionsDialog(BuildContext context) {
-    return showDialog(
-      context: context,
-      builder: (context) => SimpleDialog(
-        children: [
-          SimpleDialogOption(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => EditUserInfoScreen()),
-              );
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: const [
-                Icon(Icons.edit),
-                Padding(
-                  padding: EdgeInsets.all(7.0),
-                  child: Text(
-                    'Edit Profile',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SimpleDialogOption(
-            onPressed: () => pickVideo(ImageSource.gallery, context),
-            child: Row(
-              children: const [
-                Icon(Icons.image),
-                Padding(
-                  padding: EdgeInsets.all(7.0),
-                  child: Text(
-                    'Add Video - Gallery',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SimpleDialogOption(
-            onPressed: () => pickVideo(ImageSource.camera, context),
-            child: Row(
-              children: const [
-                Icon(Icons.camera_alt),
-                Padding(
-                  padding: EdgeInsets.all(7.0),
-                  child: Text(
-                    'Add Video - Camera',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SimpleDialogOption(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Row(
-              children: const [
-                Icon(
-                  Icons.cancel,
-                  color: Colors.red,
-                ),
-                Padding(
-                  padding: EdgeInsets.all(7.0),
-                  child: Text(
-                    'Cancel',
-                    style: TextStyle(fontSize: 20, color: Colors.red),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder(
-        future: UserService.getUserInfo(),
+        future: UserService.getPeopleInfo(widget.peopleID),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasError) {
             return const Text('Something went wrong');
@@ -244,11 +101,11 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                     //   width: MediaQuery.of(context).size.width / 8,
                     // ),
                     IconButton(
-                      onPressed: () => showOptionsDialog(context),
+                      onPressed: () => Navigator.of(context).pop(),
                       iconSize: 25,
                       icon: const Icon(
-                        Icons.menu,
-                        color: Colors.blueAccent,
+                        Icons.arrow_back_ios,
+                        color: Colors.black87,
                       ),
                     ),
                     Center(
@@ -260,11 +117,19 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                       ),
                     ),
                     IconButton(
-                      onPressed: () => showLogoutDialog(context),
+                      onPressed: () {
+                        ChatService.getChatID(
+                          context: context,
+                          peopleID: snapshot.data.get('uID'),
+                          currentUserID: '${uid}',
+                          peopleName: snapshot.data.get('fullName'),
+                          peopleImage: snapshot.data.get('avartaURL'),
+                        );
+                      },
                       iconSize: 25,
                       icon: const Icon(
-                        Icons.logout,
-                        color: Colors.blueAccent,
+                        CupertinoIcons.chat_bubble_fill,
+                        color: Colors.black87,
                       ),
                     ),
                   ],
@@ -279,7 +144,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                         height: 100,
                         width: 100,
                         child: StreamBuilder<QuerySnapshot>(
-                            stream: getUserImage(),
+                            stream: getPeopleImage(widget.peopleID),
                             builder: (BuildContext context,
                                 AsyncSnapshot<QuerySnapshot> snapshot) {
                               if (snapshot.hasError) {
@@ -311,42 +176,9 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                               );
                             }),
                       ),
-                      Positioned(
-                        bottom: -16,
-                        right: -15,
-                        child: IconButton(
-                          onPressed: () async {
-                            context.read<LoadingModel>().changeLoading();
-                            File? fileImage = await getImage();
-                            if (fileImage == null) {
-                              context.read<LoadingModel>().changeLoading();
-                            } else {
-                              String fileName =
-                                  await StorageServices.uploadImage(fileImage);
-                              UserService.editUserImage(
-                                  context: context, ImageStorageLink: fileName);
-                              context.read<LoadingModel>().changeLoading();
-                            }
-                          },
-                          icon: const Icon(
-                            Icons.upload_sharp,
-                            color: Colors.greenAccent,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
-                // const SizedBox(height: 20),
-                // CustomText(
-                //   alignment: Alignment.center,
-                //   fontsize: 20,
-                //   text: snapshot.data.get('fullName') == null
-                //       ? ''
-                //       : '${snapshot.data.get('fullName')}',
-                //   fontFamily: 'Inter',
-                //   color: Colors.black,
-                // ),
                 const SizedBox(height: 10),
                 CustomText(
                   alignment: Alignment.center,
@@ -509,7 +341,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                       StreamBuilder<QuerySnapshot>(
                         stream: FirebaseFirestore.instance
                             .collection('videos')
-                            .where('uid', isEqualTo: uid)
+                            .where('uid', isEqualTo: widget.peopleID)
                             .snapshots(),
                         builder: (BuildContext context,
                             AsyncSnapshot<QuerySnapshot> snapshot) {

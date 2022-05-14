@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -14,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   var _tabIndex = 0;
+  final List<Widget> _list = [VideoScreen(), ChatScreen(), UserInfoScreen()];
 
   void _changeTabIndex(int index) {
     setState(() {
@@ -24,11 +25,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      //resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: IndexedStack(
           index: _tabIndex,
-          children: [VideoScreen(), ChatScreen(), UserInfoScreen()],
+          children: _list,
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(

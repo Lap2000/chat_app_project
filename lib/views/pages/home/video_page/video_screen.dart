@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../database/services/video_service.dart';
 import '../../../widgets/colors.dart';
+import '../../../widgets/video_player_item.dart';
 import '../user_page/people_detail_screen.dart';
 
 class VideoScreen extends StatelessWidget {
@@ -528,201 +529,227 @@ class VideoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     //FocusManager.instance.primaryFocus.unfocus();
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('videos')
-            .where('uid', isNotEqualTo: uid)
-            .snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasError) {
-            return const Text('Something went wrong');
-          }
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          return PageView.builder(
-            dragStartBehavior: DragStartBehavior.down,
-            itemCount: snapshot.data!.docs.length,
-            scrollDirection: Axis.vertical,
-            controller: PageController(initialPage: 0, viewportFraction: 1),
-            itemBuilder: (context, index) {
-              final Video item = Video.fromSnap(snapshot.data!.docs[index]);
-              return Stack(
-                children: [
-                  // VideoPlayerItem(
-                  //   videoUrl: item.videoUrl,
-                  // ),
-                  Column(
-                    children: [
-                      const SizedBox(
-                        height: 100,
-                      ),
-                      Expanded(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          crossAxisAlignment: CrossAxisAlignment.end,
+      //resizeToAvoidBottomInset: false,
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: SingleChildScrollView(
+          physics: ClampingScrollPhysics(),
+          child: StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('videos')
+                .where('uid', isNotEqualTo: uid)
+                .snapshots(),
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasError) {
+                return const Text('Something went wrong');
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              return Container(
+                height: MediaQuery.of(context).size.height - 70,
+                width: MediaQuery.of(context).size.width,
+                child: PageView.builder(
+                  dragStartBehavior: DragStartBehavior.down,
+                  itemCount: snapshot.data!.docs.length,
+                  scrollDirection: Axis.vertical,
+                  controller:
+                      PageController(initialPage: 0, viewportFraction: 1),
+                  itemBuilder: (context, index) {
+                    final Video item =
+                        Video.fromSnap(snapshot.data!.docs[index]);
+                    return Stack(
+                      children: [
+                        VideoPlayerItem(
+                          videoUrl: item.videoUrl,
+                        ),
+                        Column(
                           children: [
-                            Expanded(
-                              child: Container(
-                                padding:
-                                    const EdgeInsets.only(left: 20, bottom: 10),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Text(
-                                      '@ ${item.username}',
-                                      style: const TextStyle(
-                                          fontSize: 20, color: Colors.white),
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    Text(
-                                      '${item.caption}',
-                                      style: const TextStyle(
-                                          fontSize: 15, color: Colors.white60),
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          CupertinoIcons.double_music_note,
-                                          color: Colors.white,
-                                        ),
-                                        Text(
-                                          '${item.songName}',
-                                          style: const TextStyle(
-                                              fontSize: 15,
-                                              color: Colors.white),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            const SizedBox(
+                              height: 100,
                             ),
-                            Container(
-                              width: 80,
-                              margin: EdgeInsets.only(top: size.height / 5),
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                            Expanded(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  buildProfile(
-                                      context, item.profilePhoto, item.uid),
-                                  Column(
-                                    children: [
-                                      InkWell(
-                                        onTap: () {
-                                          VideoServices.likeVideo(item.id);
-                                        },
-                                        child: Icon(
-                                          Icons.favorite,
-                                          size: 25,
-                                          color: snapshot
-                                                  .data!.docs[index]['likes']
-                                                  .contains(uid)
-                                              ? Colors.red
-                                              : Colors.white,
-                                        ),
+                                  Expanded(
+                                    child: Container(
+                                      padding: const EdgeInsets.only(
+                                          left: 20, bottom: 10),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Text(
+                                            '@ ${item.username}',
+                                            style: const TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.white),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            '${item.caption}',
+                                            style: const TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.white60),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Row(
+                                            children: [
+                                              const Icon(
+                                                CupertinoIcons
+                                                    .double_music_note,
+                                                color: Colors.white,
+                                              ),
+                                              Text(
+                                                '${item.songName}',
+                                                style: const TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors.white),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
-                                      const SizedBox(
-                                        height: 7,
-                                      ),
-                                      Text(
-                                        '${item.likes.length}',
-                                        style: const TextStyle(
-                                            fontSize: 16, color: Colors.white),
-                                      ),
-                                    ],
+                                    ),
                                   ),
-                                  Column(
-                                    children: [
-                                      InkWell(
-                                        onTap: () {
-                                          _showBottomSheet(context, item.id);
-                                        },
-                                        child: const Icon(
-                                          CupertinoIcons.chat_bubble_text_fill,
-                                          size: 25,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 7,
-                                      ),
-                                      StreamBuilder<QuerySnapshot>(
-                                        stream: videos
-                                            .doc(item.id)
-                                            .collection('commentList')
-                                            .snapshots(),
-                                        builder: (BuildContext context,
-                                            AsyncSnapshot<QuerySnapshot>
-                                                snapshot) {
-                                          if (snapshot.hasError) {
-                                            return const Text(
-                                                'Something went wrong');
-                                          }
-                                          if (snapshot.hasData) {
-                                            return Text(
-                                              '${snapshot.data!.docs.length}',
+                                  Container(
+                                    width: 80,
+                                    margin: EdgeInsets.only(
+                                        top:
+                                            MediaQuery.of(context).size.height /
+                                                5),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        buildProfile(context, item.profilePhoto,
+                                            item.uid),
+                                        Column(
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                VideoServices.likeVideo(
+                                                    item.id);
+                                              },
+                                              child: Icon(
+                                                Icons.favorite,
+                                                size: 25,
+                                                color: snapshot.data!
+                                                        .docs[index]['likes']
+                                                        .contains(uid)
+                                                    ? Colors.red
+                                                    : Colors.white,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 7,
+                                            ),
+                                            Text(
+                                              '${item.likes.length}',
                                               style: const TextStyle(
                                                   fontSize: 16,
                                                   color: Colors.white),
-                                            );
-                                          }
-                                          return Container();
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                  Column(
-                                    children: [
-                                      InkWell(
-                                        onTap: () {},
-                                        child: const Icon(
-                                          Icons.reply,
-                                          size: 25,
-                                          color: Colors.white,
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                      const SizedBox(
-                                        height: 7,
-                                      ),
-                                      const Text(
-                                        '0',
-                                        style: TextStyle(
-                                            fontSize: 16, color: Colors.white),
-                                      ),
-                                    ],
-                                  ),
-                                  CircleAnimation(
-                                    child: buildMusicAlbum(item.profilePhoto),
+                                        Column(
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                _showBottomSheet(
+                                                    context, item.id);
+                                              },
+                                              child: const Icon(
+                                                CupertinoIcons
+                                                    .chat_bubble_text_fill,
+                                                size: 25,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 7,
+                                            ),
+                                            StreamBuilder<QuerySnapshot>(
+                                              stream: videos
+                                                  .doc(item.id)
+                                                  .collection('commentList')
+                                                  .snapshots(),
+                                              builder: (BuildContext context,
+                                                  AsyncSnapshot<QuerySnapshot>
+                                                      snapshot) {
+                                                if (snapshot.hasError) {
+                                                  return const Text(
+                                                      'Something went wrong');
+                                                }
+                                                if (snapshot.hasData) {
+                                                  return Text(
+                                                    '${snapshot.data!.docs.length}',
+                                                    style: const TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.white),
+                                                  );
+                                                }
+                                                return Container();
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                        Column(
+                                          children: [
+                                            InkWell(
+                                              onTap: () {},
+                                              child: const Icon(
+                                                Icons.reply,
+                                                size: 25,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 7,
+                                            ),
+                                            const Text(
+                                              '0',
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.white),
+                                            ),
+                                          ],
+                                        ),
+                                        CircleAnimation(
+                                          child: buildMusicAlbum(
+                                              item.profilePhoto),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    );
+                  },
+                ),
               );
             },
-          );
-        },
+          ),
+        ),
       ),
     );
   }

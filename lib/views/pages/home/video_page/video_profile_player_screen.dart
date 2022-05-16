@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../database/services/storage_services.dart';
 import '../../../../database/services/video_service.dart';
 import '../../../widgets/colors.dart';
 import '../../../widgets/video_player_item.dart';
@@ -477,7 +478,10 @@ class VideoProfileScreen extends StatelessWidget {
                                       Column(
                                         children: [
                                           InkWell(
-                                            onTap: () {},
+                                            onTap: () {
+                                              showOptionsDialog(
+                                                  context, item.videoUrl);
+                                            },
                                             child: const Icon(
                                               Icons.reply,
                                               size: 25,
@@ -486,12 +490,6 @@ class VideoProfileScreen extends StatelessWidget {
                                           ),
                                           const SizedBox(
                                             height: 7,
-                                          ),
-                                          const Text(
-                                            '0',
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.white),
                                           ),
                                         ],
                                       ),
@@ -528,6 +526,52 @@ class VideoProfileScreen extends StatelessWidget {
           }
           return Container();
         },
+      ),
+    );
+  }
+
+  showOptionsDialog(BuildContext context, String url) {
+    return showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        children: [
+          SimpleDialogOption(
+            onPressed: () {
+              StorageServices.saveFile(url);
+              Navigator.of(context).pop();
+            },
+            child: Row(
+              children: const [
+                Icon(Icons.save_alt),
+                Padding(
+                  padding: EdgeInsets.all(7.0),
+                  child: Text(
+                    'Save',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Row(
+              children: const [
+                Icon(
+                  Icons.cancel,
+                  color: Colors.red,
+                ),
+                Padding(
+                  padding: EdgeInsets.all(7.0),
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(fontSize: 20, color: Colors.red),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

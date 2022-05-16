@@ -1,5 +1,6 @@
 import 'package:chat_app_project/views/pages/home/home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -136,6 +137,24 @@ class UserService {
       getSnackBar(
         'Edit Image',
         'Edit Fail. $e',
+        Colors.red,
+      ).show(context);
+    }
+  }
+
+  static changPassword({required BuildContext context, required newPassword}) {
+    try {
+      FirebaseAuth.instance.currentUser?.updatePassword(newPassword);
+      Navigator.of(context).pop();
+      getSnackBar(
+        'Update Password',
+        'Success.',
+        Colors.green,
+      ).show(context);
+    } catch (e) {
+      getSnackBar(
+        'Update Password',
+        'Fail. $e',
         Colors.red,
       ).show(context);
     }

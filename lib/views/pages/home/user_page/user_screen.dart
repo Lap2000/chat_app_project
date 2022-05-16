@@ -5,6 +5,7 @@ import 'package:chat_app_project/database/services/auth_service.dart';
 import 'package:chat_app_project/database/services/storage_services.dart';
 import 'package:chat_app_project/database/services/user_service.dart';
 import 'package:chat_app_project/views/pages/home/user_page/edit_user_screen.dart';
+import 'package:chat_app_project/views/pages/home/user_page/update_password_screen.dart';
 import 'package:chat_app_project/views/widgets/text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -158,6 +159,27 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                   padding: EdgeInsets.all(7.0),
                   child: Text(
                     'Edit Profile',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SimpleDialogOption(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UpdatePasswordScreen()),
+              );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: const [
+                Icon(Icons.lock_clock),
+                Padding(
+                  padding: EdgeInsets.all(7.0),
+                  child: Text(
+                    'Update Password',
                     style: TextStyle(fontSize: 20),
                   ),
                 ),

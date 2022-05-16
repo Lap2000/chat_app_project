@@ -68,10 +68,10 @@ class ChatScreen extends StatelessWidget {
               height: MediaQuery.of(context).size.height / 10,
               child: CustomText(
                 alignment: Alignment.bottomLeft,
-                fontsize: 30,
+                fontsize: 22,
                 text: 'Everybody',
-                fontFamily: 'DancingScript',
-                color: Colors.black,
+                fontFamily: 'Inter',
+                color: Colors.white,
               ),
             ),
             Expanded(

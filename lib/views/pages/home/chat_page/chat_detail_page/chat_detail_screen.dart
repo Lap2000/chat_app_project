@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:chat_app_project/database/models/save_model.dart';
 import 'package:chat_app_project/database/services/chat_services.dart';
 import 'package:chat_app_project/views/pages/home/user_page/people_detail_screen.dart';
 import 'package:chat_bubbles/bubbles/bubble_special_three.dart';
@@ -105,9 +106,56 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     return null;
   }
 
+  showOptionsDialog(BuildContext context, String url) {
+    return showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        children: [
+          SimpleDialogOption(
+            onPressed: () {
+              StorageServices.saveFile(url);
+              Navigator.of(context).pop();
+            },
+            child: Row(
+              children: const [
+                Icon(Icons.save_alt),
+                Padding(
+                  padding: EdgeInsets.all(7.0),
+                  child: Text(
+                    'Save',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Row(
+              children: const [
+                Icon(
+                  Icons.cancel,
+                  color: Colors.red,
+                ),
+                Padding(
+                  padding: EdgeInsets.all(7.0),
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(fontSize: 20, color: Colors.red),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     context.read<LoadingModel>().isLoading = false;
+    context.read<SaveModel>().isSaving = 0.0;
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -224,25 +272,34 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                     children: [
                                       Expanded(
                                         child: data['type'] == 'image'
-                                            ? Container(
-                                                width: 200,
-                                                height: 200,
-                                                padding: EdgeInsets.only(
-                                                    left: 10, right: 10),
-                                                alignment: isSender(
-                                                        data['uID'].toString())
-                                                    ? Alignment.centerRight
-                                                    : Alignment.centerLeft,
-                                                child: Image.network(
-                                                  data['content'],
-                                                  fit: BoxFit.cover,
-                                                ))
+                                            ? GestureDetector(
+                                                onLongPress: () {
+                                                  showOptionsDialog(
+                                                      context, data['content']);
+                                                },
+                                                child: Container(
+                                                  width: 200,
+                                                  height: 200,
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 10, right: 10),
+                                                  alignment: isSender(
+                                                          data['uID']
+                                                              .toString())
+                                                      ? Alignment.centerRight
+                                                      : Alignment.centerLeft,
+                                                  child: Image.network(
+                                                    data['content'],
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              )
                                             : BubbleSpecialThree(
                                                 text: data['content'],
                                                 color: isSender(
                                                         data['uID'].toString())
-                                                    ? MyColors.secondColor
-                                                    : Colors.grey,
+                                                    ? MyColors.thirdColor
+                                                    : Colors.grey.shade300,
                                                 tail: true,
                                                 isSender: isSender(
                                                     data['uID'].toString()),

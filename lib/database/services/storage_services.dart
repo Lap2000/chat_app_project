@@ -1,10 +1,13 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_compress/video_compress.dart';
 
@@ -103,6 +106,20 @@ class StorageServices {
       //   e.toString(),
       // );
       print(e);
+    }
+  }
+
+  static saveFile(String linkStorage) async {
+    final tempDir = await getTemporaryDirectory();
+    final path = '${tempDir.path}/${linkStorage}';
+    await Dio().download(linkStorage, path,
+        onReceiveProgress: (received, total) {
+      double? progress = received / total;
+    });
+    if (linkStorage.contains('.mp4')) {
+      await GallerySaver.saveVideo(path, toDcim: true);
+    } else if (linkStorage.contains('.jpg')) {
+      await GallerySaver.saveImage(path, toDcim: true);
     }
   }
 }

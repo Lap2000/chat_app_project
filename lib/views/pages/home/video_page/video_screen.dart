@@ -502,7 +502,7 @@ class VideoScreen extends StatelessWidget {
                     },
                     icon: Icon(
                       Icons.send_rounded,
-                      color: MyColors.mainColor,
+                      color: MyColors.thirdColor,
                     ),
                   ),
                 ),

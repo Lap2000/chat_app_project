@@ -199,7 +199,7 @@ class RegisterScreen extends StatelessWidget {
                                   doRegister(context);
                                 },
                                 text: 'SIGN UP',
-                                color: MyColors.secondColor,
+                                color: MyColors.thirdColor,
                               ),
                             ],
                           ),

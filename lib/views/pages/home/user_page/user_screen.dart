@@ -78,12 +78,12 @@ class _UserInfoScreenState extends State<UserInfoScreen>
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
+              children: const [
+                Text(
                   'SIGN OUT',
                   style: TextStyle(fontSize: 25, color: Colors.red),
                 ),
-                const Text(
+                Text(
                   'Are you sure ?',
                   style: TextStyle(fontSize: 20),
                 ),
@@ -268,9 +268,9 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                     IconButton(
                       onPressed: () => showOptionsDialog(context),
                       iconSize: 25,
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.menu,
-                        color: Colors.blueAccent,
+                        color: MyColors.thirdColor,
                       ),
                     ),
                     Center(
@@ -278,15 +278,15 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                         fontsize: 40,
                         text: '${snapshot.data.get('fullName')}',
                         fontFamily: 'DancingScript',
-                        color: MyColors.yellowColor,
+                        color: Colors.black,
                       ),
                     ),
                     IconButton(
                       onPressed: () => showLogoutDialog(context),
                       iconSize: 25,
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.logout,
-                        color: Colors.blueAccent,
+                        color: MyColors.thirdColor,
                       ),
                     ),
                   ],
@@ -350,9 +350,9 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                               context.read<LoadingModel>().changeLoading();
                             }
                           },
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.upload_sharp,
-                            color: Colors.greenAccent,
+                            color: MyColors.thirdColor,
                           ),
                         ),
                       ),
@@ -375,7 +375,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                   fontsize: 25,
                   text: '${snapshot.data.get('email')}',
                   fontFamily: 'DancingScript',
-                  color: MyColors.yellowColor,
+                  color: Colors.black,
                 ),
                 const SizedBox(height: 20),
                 SizedBox(

@@ -113,7 +113,7 @@ class _PeopleInfoScreenState extends State<PeopleInfoScreen>
                         fontsize: 40,
                         text: '${snapshot.data.get('fullName')}',
                         fontFamily: 'DancingScript',
-                        color: MyColors.yellowColor,
+                        color: Colors.black,
                       ),
                     ),
                     IconButton(
@@ -167,7 +167,7 @@ class _PeopleInfoScreenState extends State<PeopleInfoScreen>
                                     );
                                   } else {
                                     return CircleAvatar(
-                                      backgroundColor: MyColors.mainColor,
+                                      backgroundColor: Colors.black,
                                       backgroundImage: NetworkImage(snapshot
                                           .data?.docs.first['avartaURL']),
                                     );

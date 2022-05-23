@@ -162,7 +162,7 @@ class LoginScreen extends StatelessWidget {
                                   doLogin(context);
                                 },
                                 text: 'LOGIN',
-                                color: MyColors.mainColor,
+                                color: MyColors.thirdColor,
                               ),
                             ],
                           ),

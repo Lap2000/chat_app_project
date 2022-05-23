@@ -208,7 +208,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           ),
         ),
         centerTitle: true,
-        backgroundColor: MyColors.mainColor,
+        backgroundColor: MyColors.thirdColor,
         actions: [
           // Icon(
           //   Icons.call_outlined,
@@ -216,7 +216,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           // ),
         ],
       ),
-      backgroundColor: MyColors.mainColor,
+      backgroundColor: MyColors.thirdColor,
       body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('chats')
@@ -384,7 +384,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                               },
                               icon: Icon(
                                 Icons.enhance_photo_translate,
-                                color: MyColors.mainColor,
+                                color: MyColors.thirdColor,
                               )),
                           IconButton(
                               onPressed: () async {
@@ -406,7 +406,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                 }
                               },
                               icon: Icon(Icons.image_outlined,
-                                  color: MyColors.mainColor)),
+                                  color: MyColors.thirdColor)),
                           Expanded(
                             child: Container(
                               height: 45,
@@ -417,7 +417,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                   border: OutlineInputBorder(
                                     borderSide: BorderSide(
                                       width: 2,
-                                      color: MyColors.mainColor,
+                                      color: MyColors.thirdColor,
                                     ),
                                     borderRadius: BorderRadius.circular(25.0),
                                   ),
@@ -429,7 +429,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                     },
                                     icon: Icon(
                                       Icons.send_rounded,
-                                      color: MyColors.mainColor,
+                                      color: MyColors.thirdColor,
                                     ),
                                   ),
                                 ),

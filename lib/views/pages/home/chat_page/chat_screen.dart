@@ -47,7 +47,7 @@ class ChatScreen extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-            backgroundColor: MyColors.mainColor,
+            backgroundColor: MyColors.thirdColor,
             elevation: 0,
             centerTitle: true,
             leading: const Text(''),
@@ -59,7 +59,7 @@ class ChatScreen extends StatelessWidget {
                 fontFamily: 'DancingScript',
               ),
             )),
-        backgroundColor: MyColors.mainColor,
+        backgroundColor: MyColors.thirdColor,
         body: Column(
           children: [
             Container(

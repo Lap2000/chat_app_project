@@ -268,7 +268,7 @@ class VideoProfileScreen extends StatelessWidget {
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
                       width: 2,
-                      color: MyColors.mainColor,
+                      color: MyColors.thirdColor,
                     ),
                     borderRadius: BorderRadius.circular(10.0),
                   ),
@@ -280,7 +280,7 @@ class VideoProfileScreen extends StatelessWidget {
                     },
                     icon: Icon(
                       Icons.send_rounded,
-                      color: MyColors.mainColor,
+                      color: MyColors.thirdColor,
                     ),
                   ),
                 ),

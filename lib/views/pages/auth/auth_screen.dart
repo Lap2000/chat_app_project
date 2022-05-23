@@ -54,7 +54,7 @@ class AuthScreen extends StatelessWidget {
                           CustomText(
                             text: 'Chat App',
                             fontsize: 50,
-                            color: MyColors.yellowColor,
+                            color: Colors.black,
                             alignment: Alignment.center,
                             fontFamily: 'SquarePeg',
                           ),
@@ -70,7 +70,7 @@ class AuthScreen extends StatelessWidget {
                               );
                             },
                             text: 'LOGIN',
-                            color: MyColors.mainColor,
+                            color: MyColors.thirdColor,
                           ),
                           const SizedBox(
                             height: 20,
@@ -84,7 +84,7 @@ class AuthScreen extends StatelessWidget {
                               );
                             },
                             text: 'SIGN UP',
-                            color: MyColors.secondColor,
+                            color: MyColors.thirdColor,
                           ),
                           const SizedBox(
                             height: 10,
@@ -96,7 +96,7 @@ class AuthScreen extends StatelessWidget {
                               onPress: () {},
                               text: 'Forgot Password ?',
                               fontsize: 20,
-                              color: MyColors.yellowColor,
+                              color: Colors.black,
                               alignment: Alignment.centerRight,
                               fontFamily: 'DancingScript',
                             ),

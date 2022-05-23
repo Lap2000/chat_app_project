@@ -1,4 +1,3 @@
-import 'package:chat_app_project/views/widgets/colors.dart';
 import 'package:chat_app_project/views/widgets/text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +33,7 @@ class CustomTextFormField extends StatelessWidget {
           CustomText(
             text: text,
             fontsize: 20,
-            color: MyColors.yellowColor,
+            color: Colors.black,
             fontFamily: 'DancingScript',
           ),
           TextFormField(

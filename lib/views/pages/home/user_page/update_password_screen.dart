@@ -61,7 +61,7 @@ class UpdatePasswordScreen extends StatelessWidget {
                       child: CustomText(
                         text: 'Update Password',
                         fontsize: 40,
-                        color: MyColors.yellowColor,
+                        color: Colors.black,
                         fontFamily: 'DancingScript',
                       ),
                     ),
@@ -156,7 +156,7 @@ class UpdatePasswordScreen extends StatelessWidget {
                                   doEdit(context);
                                 },
                                 text: 'SAVE',
-                                color: MyColors.secondColor,
+                                color: MyColors.thirdColor,
                               ),
                             ],
                           ),

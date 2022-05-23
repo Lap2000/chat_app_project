@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
         currentIndex: _tabIndex,
-        selectedItemColor: MyColors.mainColor,
+        selectedItemColor: MyColors.thirdColor,
         onTap: _changeTabIndex,
       ),
     );

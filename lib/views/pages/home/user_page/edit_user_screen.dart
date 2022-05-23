@@ -100,7 +100,7 @@ class EditUserInfoScreen extends StatelessWidget {
                       child: CustomText(
                         text: 'Edit Info',
                         fontsize: 40,
-                        color: MyColors.yellowColor,
+                        color: Colors.black,
                         fontFamily: 'DancingScript',
                       ),
                     ),
@@ -203,7 +203,7 @@ class EditUserInfoScreen extends StatelessWidget {
                               CustomText(
                                 text: 'Gender',
                                 fontsize: 20,
-                                color: MyColors.yellowColor,
+                                color: Colors.black,
                                 fontFamily: 'DancingScript',
                               ),
                               Container(
@@ -228,7 +228,7 @@ class EditUserInfoScreen extends StatelessWidget {
                                   doEdit(context);
                                 },
                                 text: 'SAVE',
-                                color: MyColors.secondColor,
+                                color: MyColors.thirdColor,
                               ),
                             ],
                           ),

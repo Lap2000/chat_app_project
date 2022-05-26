@@ -1,3 +1,4 @@
+import 'package:chat_app_project/views/pages/auth/forgot_password_screen.dart';
 import 'package:chat_app_project/views/pages/auth/login_screen.dart';
 import 'package:chat_app_project/views/pages/auth/register_screen.dart';
 import 'package:chat_app_project/views/widgets/custom_button.dart';
@@ -93,7 +94,13 @@ class AuthScreen extends StatelessWidget {
                             width: MediaQuery.of(context).size.width - 16,
                             alignment: Alignment.centerRight,
                             child: ButtonTextCustom(
-                              onPress: () {},
+                              onPress: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ForgotPasswordScreen()),
+                                );
+                              },
                               text: 'Forgot Password ?',
                               fontsize: 20,
                               color: Colors.black,

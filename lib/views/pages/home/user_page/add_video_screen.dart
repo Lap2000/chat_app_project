@@ -104,7 +104,7 @@ class AddVideoScreen extends StatelessWidget {
                                 Navigator.pop(context);
                               },
                               color: Colors.red,
-                              child: Text('Cancle'),
+                              child: Text('Cancel'),
                             ),
                             SizedBox(
                               width: 60,

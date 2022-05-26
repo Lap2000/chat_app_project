@@ -76,6 +76,7 @@ class AuthService {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
+      userCredential.user?.sendEmailVerification();
       print('${userCredential.user?.uid}');
       await UserService.addUser(
           UID: userCredential.user?.uid, fullName: fullName, email: email);

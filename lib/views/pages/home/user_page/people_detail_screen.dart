@@ -12,7 +12,6 @@ import 'package:provider/provider.dart';
 import 'package:tab_indicator_styler/tab_indicator_styler.dart';
 
 import '../../../../database/services/chat_services.dart';
-import '../../../widgets/colors.dart';
 import '../video_page/video_profile_player_screen.dart';
 import 'add_video_screen.dart';
 
@@ -185,7 +184,7 @@ class _PeopleInfoScreenState extends State<PeopleInfoScreen>
                   fontsize: 25,
                   text: '${snapshot.data.get('email')}',
                   fontFamily: 'DancingScript',
-                  color: MyColors.yellowColor,
+                  color: Colors.black,
                 ),
                 const SizedBox(height: 20),
                 SizedBox(
